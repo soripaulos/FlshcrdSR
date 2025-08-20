@@ -1,0 +1,24 @@
+# Coolify deployment configuration for Flutter Web App
+version: "1.0"
+
+services:
+  flutterfiretest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+      - FLUTTER_WEB=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge

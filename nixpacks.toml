@@ -1,0 +1,46 @@
+[providers]
+# Use the Dart provider for Flutter applications
+dart = "3.2.0"
+
+[variables]
+# Set Flutter channel to stable
+FLUTTER_CHANNEL = "stable"
+# Enable Flutter web
+FLUTTER_WEB = "true"
+# Set the build mode to release for production
+FLUTTER_BUILD_MODE = "release"
+
+[phases.setup]
+# Install Flutter and dependencies
+dependsOn = ["..."]
+cmds = [
+    "curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar -xJ -C /opt",
+    "export PATH=\"$PATH:/opt/flutter/bin\"",
+    "flutter --version",
+    "flutter config --enable-web",
+    "flutter doctor --android-licenses || true"
+]
+
+[phases.install]
+# Install project dependencies
+dependsOn = ["setup"]
+cmds = [
+    "export PATH=\"$PATH:/opt/flutter/bin\"",
+    "flutter pub get"
+]
+
+[phases.build]
+# Build the Flutter web application
+dependsOn = ["install"]
+cmds = [
+    "export PATH=\"$PATH:/opt/flutter/bin\"",
+    "flutter build web --release --web-renderer html"
+]
+
+[start]
+# Serve the built web application using custom server with SPA routing support
+cmd = "python3 server.py"
+
+[staticAssets]
+# Serve static assets from the Flutter web build output
+"build/web" = "/"

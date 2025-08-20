@@ -1,0 +1,38 @@
+{
+  "providers": ["dart"],
+  "buildImage": "ubuntu:22.04",
+  "variables": {
+    "FLUTTER_CHANNEL": "stable",
+    "FLUTTER_VERSION": "3.16.0",
+    "FLUTTER_WEB": "true"
+  },
+  "phases": {
+    "setup": {
+      "cmds": [
+        "apt-get update && apt-get install -y curl git unzip xz-utils zip libglu1-mesa python3",
+        "curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar -xJ -C /opt",
+        "export PATH=\"$PATH:/opt/flutter/bin\"",
+        "flutter config --enable-web",
+        "flutter doctor || true"
+      ]
+    },
+    "install": {
+      "cmds": [
+        "export PATH=\"$PATH:/opt/flutter/bin\"",
+        "flutter pub get"
+      ]
+    },
+    "build": {
+      "cmds": [
+        "export PATH=\"$PATH:/opt/flutter/bin\"",
+        "flutter build web --release --web-renderer html --base-href /"
+      ]
+    }
+  },
+  "start": {
+    "cmd": "cd build/web && python3 -m http.server $PORT"
+  },
+  "staticAssets": {
+    "build/web": "/"
+  }
+}
